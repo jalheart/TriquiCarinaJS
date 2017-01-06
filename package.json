@@ -1,0 +1,15 @@
+{
+    "name": "CarinaCoreJS",
+    "version": "1.0.0",
+    "keywords": ["util", "functional", "server", "client", "browser"],
+    "author": "jalheart",
+    "contributors": [],
+    "scripts": {    
+      "dev": "lite-server",
+      "start": "tsc && concurrently \"tsc -w\" \"lite-server\" "
+    },
+    "dependencies": {
+      "rxjs":"5.0.2",
+      "systemjs": "0.19.40"
+    }
+}
