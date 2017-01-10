@@ -11,7 +11,7 @@
     "initial_data":{
         "long_term_memory":{
             "patterns":["[0-2]_[0-2]","reset"],
-            "categories":["playable","reset"]
+            "categories":["player_move","reset","init"]
         },
         "mental_states":{
             "persistents":{

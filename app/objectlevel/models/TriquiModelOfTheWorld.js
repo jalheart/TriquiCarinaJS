@@ -1,21 +1,30 @@
-System.register(['../models/Board'], function(exports_1, context_1) {
+System.register(["../../../libs/carina/objectlevel/ModelOfTheWorld", "../../../libs/carina/metacore/Goal", "../../../libs/carina/memory/WorkingMemory", "../../../libs/carina/memory/BasicMemoryUnity", "../models/Board"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var Board_1;
-    var ModelOfTheWorld, Goal, WorkingMemory, BasicMemoryUnity, TriquiModelOfTheWorld;
+    var ModelOfTheWorld_1, Goal_1, WorkingMemory_1, BasicMemoryUnity_1, Board_1, TriquiModelOfTheWorld;
     return {
-        setters:[
+        setters: [
+            function (ModelOfTheWorld_1_1) {
+                ModelOfTheWorld_1 = ModelOfTheWorld_1_1;
+            },
+            function (Goal_1_1) {
+                Goal_1 = Goal_1_1;
+            },
+            function (WorkingMemory_1_1) {
+                WorkingMemory_1 = WorkingMemory_1_1;
+            },
+            function (BasicMemoryUnity_1_1) {
+                BasicMemoryUnity_1 = BasicMemoryUnity_1_1;
+            },
             function (Board_1_1) {
                 Board_1 = Board_1_1;
-            }],
-        execute: function() {
-            ModelOfTheWorld = carina.objectlevel.ModelOfTheWorld;
-            Goal = carina.metacore.Goal;
-            BasicMemoryUnity = carina.memory.BasicMemoryUnity;
+            }
+        ],
+        execute: function () {
             /**
              * @author jalheart
              */
-            class TriquiModelOfTheWorld extends ModelOfTheWorld {
+            TriquiModelOfTheWorld = class TriquiModelOfTheWorld extends ModelOfTheWorld_1.ModelOfTheWorld {
                 constructor() {
                     super();
                     this._machineToken = "O";
@@ -23,8 +32,9 @@ System.register(['../models/Board'], function(exports_1, context_1) {
                     this._isMeTurn = false;
                     this._board = new Board_1.Board();
                     this._board.create(3, 3);
-                    this.mission = new Goal();
-                    console.log(this.stateIsCreated);
+                    this.mission = new Goal_1.Goal();
+                    //Si no se ha inicializado la board, se inicializado
+                    //Si ya se inicilaizo, se carga de la workingMemory la board guardada
                     // if(!board.equals(getStateIs_created())){
                     //     this.setStateIs_created(true);
                     //     this.updateModelOfTheWorld();
@@ -35,7 +45,7 @@ System.register(['../models/Board'], function(exports_1, context_1) {
                 changeTurn() {
                     this.stateIsMeTurn = !this.stateIsMeTurn;
                 }
-                currentToken() {
+                get currentToken() {
                     return this.stateIsMeTurn ? this.machineToken : this.playerToken;
                 }
                 /**
@@ -106,13 +116,30 @@ System.register(['../models/Board'], function(exports_1, context_1) {
                     this._playerToken = playerToken;
                 }
                 updateModelOfTheWorld() {
-                    var workingMemory = global.WorkingMemory.instance;
-                    ;
-                    workingMemory.storeInformation(new BasicMemoryUnity("cells", this.board.cells));
-                    workingMemory.storeInformation(new BasicMemoryUnity("is_created", this.stateIsCreated));
+                    return new Promise((resolve) => {
+                        //            WorkingMemory.instance.storeInformation(new BasicMemoryUnity("cells", this.board.cells)).then((resultCells)=>{
+                        WorkingMemory_1.WorkingMemory.instance.storeInformation(new BasicMemoryUnity_1.BasicMemoryUnity("is_created", this.stateIsCreated)).then((resultCreated) => {
+                            resolve(true);
+                        });
+                        //            });
+                    });
                 }
-            }
+                // <editor-fold defaultstate="collapsed" desc="implementación fromJSON">
+                static fromJSON(jsonObject) {
+                    var salida;
+                    salida = new TriquiModelOfTheWorld();
+                    if (jsonObject['_isMeTurn'])
+                        salida.stateIsMeTurn = jsonObject['_isMeTurn'];
+                    if (jsonObject['_board'])
+                        salida.board = Board_1.Board.fromJSON(jsonObject['_board']);
+                    if (jsonObject['_machineToken'])
+                        salida.machineToken = jsonObject['_machineToken'];
+                    if (jsonObject['_playerToken'])
+                        salida.playerToken = jsonObject['_playerToken'];
+                    return salida;
+                }
+            };
             exports_1("TriquiModelOfTheWorld", TriquiModelOfTheWorld);
         }
-    }
+    };
 });

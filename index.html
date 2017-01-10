@@ -9,7 +9,7 @@
         <script src="./node_modules/systemjs/dist/system.js"></script>
         <script src="systemjs.config.js"></script>
         <script>
-            var global={};
+            var g={};
         </script>
     </head>
     <body>
@@ -17,21 +17,50 @@
             <div class="container">
                 <div class="navbar-header">                    
                     <a class="navbar-brand" href="#">Carina TIC TAC TOE</a>
-                    <img src="imgs/triqui.png" class="loguito"/>
+                    <img src="imgs/triqui.png" class="loguito" alt="logo"/>
                 </div>
             </div>
         </div>
         <div class="jumbotron">
             <!--<div class="container">-->
                 <div class="row">
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <div id="consolaEventos">                            
                         </div>                        
                     </div>
-                    <div class="col-sm-6">
-                        Aquí viene el tic tac toe
+                    <div class="col-sm-4">
+                        <br/>
+                        <table class='tictactoe'>
+                            <tbody>
+                                <tr>
+                                    <td><input type='submit' name='player_move' id="pm_00" data-pos="0_0"></td>
+                                    <td><input type='submit' name='player_move' id="pm_01" data-pos="0_1"></td>
+                                    <td><input type='submit' name='player_move' id="pm_02" data-pos="0_2"></td>
+                                </tr>
+                                <tr>
+                                    <td><input type='submit' name='player_move' id="pm_10" data-pos="1_0"></td>
+                                    <td><input type='submit' name='player_move' id="pm_11" data-pos="1_1"></td>
+                                    <td><input type='submit' name='player_move' id="pm_12" data-pos="1_2"></td>
+                                </tr>                                                           
+                                <tr>
+                                    <td><input type='submit' name='player_move' id="pm_20" data-pos="2_0"></td>
+                                    <td><input type='submit' name='player_move' id="pm_21" data-pos="2_1"></td>
+                                    <td><input type='submit' name='player_move' id="pm_22" data-pos="2_2"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan='3'>
+                                        <a class='btn btn-primary bn-lg' id="btn_reset"><span class='glyphicon glyphicon-refresh'></span>&nbsp;RESTART</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan='3'>
+                                        <div class='win' id="win_div"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="col-sm-3">
+                    <div class="col-sm-4">
                         <div id="consolaEstadosMentales">
                         </div>
                     </div>

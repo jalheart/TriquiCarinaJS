@@ -1,11 +1,13 @@
-import * as modulo from "../../../libs/CarinaCore";
-import Element=carina.metacore.Element;
 /**
  *
  * @author jalheart
  */
+import { Element } from '../../../libs/carina/metacore/Element';
 export class Board extends Element{
     private _cells:string[][];
+    constructor(){
+        super();        
+    }
     public create(filas:number,columnas:number){
         this._cells =[];
         for(var i=0;i<filas;i++){
@@ -34,4 +36,12 @@ export class Board extends Element{
     public set cells(cells:string[][]) {
         this._cells = cells;
     }
+    // <editor-fold defaultstate="collapsed" desc="implementación fromJSON">
+    public static fromJSON(jsonObject: any): Board{
+        var salida: Board;
+        salida = new Board();
+        if (jsonObject._cells) salida.cells= jsonObject['_cells'];
+        return salida;
+    }
+    // </editor-fold>
 }

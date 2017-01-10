@@ -1,41 +1,40 @@
-import * as modulo from "../../libs/CarinaCore";
-import * as mConsola from '../../libs/Consola';
-import State= carina.metacore.State;
-import MemoryDriverIndexDB = carina.memory.MemoryDriverIndexDB;
-import BasicMemoryUnity = carina.memory.BasicMemoryUnity;
-import Memory = carina.memory.Memory;
-import Pattern= carina.objectlevel.Pattern;
-import Category= carina.objectlevel.Category;
-import ModelOfTheSelf = carina.objectlevel.ModelOfTheWorld;
-import BasicCognitiveProcessingUnit = carina.objectlevel.BasicCognitiveProcessingUnit;
+//TODO A cada clase se le debe agregar un metodo estático llamado fromJSON  que se encarga de crear una intancia con base en un json obtenido de la memoria                                    
+import { State} from '../../libs/carina/metacore/State';
+import { MemoryDriverIndexDB } from '../../libs/carina/memory/MemoryDriverIndexDB';
+import { BasicMemoryUnity } from '../../libs/carina/memory/BasicMemoryUnity';
+import { Memory } from '../../libs/carina/memory/Memory';
+import { LongTermMemory} from '../../libs/carina/memory/LongTermMemory';
+import { PerceptualMemory} from '../../libs/carina/memory/PerceptualMemory';
+import { SensorMemory} from '../../libs/carina/memory/SensorMemory';
+import { WorkingMemory } from '../../libs/carina/memory/WorkingMemory';
+import { Pattern } from '../../libs/carina/objectlevel/Pattern';
+import { Category } from '../../libs/carina/objectlevel/Category';
+import { ModelOfTheSelf } from '../../libs/carina/modeloftheself/ModelOfTheSelf';
+import { BasicCognitiveProcessingUnit } from '../../libs/carina/objectlevel/BasicCognitiveProcessingUnit';
+import { AgentSettings} from '../../libs/carina/objectlevel/AgentSettings';
+import { Consola} from '../../libs/Consola';
 import {Reasoner} from './controllers/Reasoner';
-
-declare var global:any;
-global.AgentSettings = modulo.objectlevel.AgentSettings;
-global.LongTermMemory= modulo.memory.LongTermMemory;
-global.PerceptualMemory= modulo.memory.PerceptualMemory;
-global.SensorMemory= modulo.memory.SensorMemory;
-global.WorkingMemory= modulo.memory.WorkingMemory;
-
 export class TicTacToe{
     private _path: string='./app/';
-    private _config: JSON;
+    private _config: JSON;    
     public init(){
         this.initConsoles();
         this.loadJSON(this._path + 'config.json').then((result)=>{
             this._config = result;
-            global.AgentSettings.config = result;
+            AgentSettings.config = result;
             this.initMemories().then(()=>{
                 this.loadInitialData(this._config).then((result)=>{
                     this.loadCognitiveModels(this._config["cognitive_models"]).then((result)=>{
                         this.initModelOfTheSelf().then((result)=>{
-                            var workingMemory:carina.memory.WorkingMemory  =global.WorkingMemory.instance;                            
-                            workingMemory.bcpu  =new BasicCognitiveProcessingUnit();
+                            var workingMemory:WorkingMemory  =WorkingMemory.instance;
+                            var tmpBCPU: BasicCognitiveProcessingUnit  =new BasicCognitiveProcessingUnit();                            
+                            WorkingMemory.instance.setBCPU(tmpBCPU).then((result)=>{
+                                var reasoner:Reasoner   =new Reasoner();                                
+                            });
+//                            WorkingMemory.instance.bcpu  =new BasicCognitiveProcessingUnit();             
                             //Esto es usado para mostrar los eventos que sucenden en el sistema
-                            // List<Event> eventos =new ArrayList<>();
-                            // wm.storeInformation(new BasicMemoryUnity("events", eventos));
-                            // var reasoner:Reasoner   =new Reasoner(inputs,out);
-                            var reasoner:Reasoner   =new Reasoner();
+//                            reasoner.initSensors();
+//                            reasoner.sensing();
                             // if(reasoner.perception()){
                             //     if(reasoner.recognition()){
                             //         reasoner.categorization();
@@ -70,24 +69,22 @@ export class TicTacToe{
     }
     /** Se inicializan las consolas para mostrar un log de los procesos internos realizados **/
     private initConsoles(){
-        global.Consola= mConsola.Consola;
-        var consolaEventos: mConsola.Consola  =global.Consola.getConsola('consolaEventos');
+        var consolaEventos: Consola  =Consola.getConsola('consolaEventos');
         consolaEventos.init('consolaEventos');
-        var consolaEstadosMentales: mConsola.Consola = global.Consola.getConsola('consolaEstadosMentales');
+        var consolaEstadosMentales: Consola = Consola.getConsola('consolaEstadosMentales');
         consolaEstadosMentales.init('consolaEstadosMentales');        
     }
     /** Carga la inromación el JSON a las memorias utilizadas por el sistema **/
     private initMemories():Promise<boolean>{
         return new Promise((resolve,reject)=>{
-            var config: JSON = global.AgentSettings.config;
+            var config: JSON = AgentSettings.config;
             var memoryConfig:JSON   =config['memory_management'];            
             if(memoryConfig['type']==='indexDB'){                
                 var dataBaseConfig: JSON = memoryConfig['config'];
-                
-                this.initMemory(dataBaseConfig, global.LongTermMemory, 'longterm_memory').then((result)=>{
-                    this.initMemory(dataBaseConfig, global.PerceptualMemory, 'perceptual_memory').then((result)=>{
-                        this.initMemory(dataBaseConfig, global.SensorMemory, 'sensors').then((result)=>{
-                            this.initMemory(dataBaseConfig, global.WorkingMemory, 'working_memory').then((result)=>{
+                this.initMemory(dataBaseConfig,LongTermMemory, 'longterm_memory').then((result)=>{
+                    this.initMemory(dataBaseConfig, PerceptualMemory, 'perceptual_memory').then((result)=>{
+                        this.initMemory(dataBaseConfig, SensorMemory, 'sensors').then((result)=>{
+                            this.initMemory(dataBaseConfig, WorkingMemory, 'working_memory').then((result)=>{
                                 resolve(true);
                             });                            
                         });                        
@@ -95,7 +92,7 @@ export class TicTacToe{
                 });                
             }
         });
-    }
+    }    
     private initMemory(dataBaseConfig: JSON, memory: any, tableName: string): Promise<boolean>{
         return new Promise((resolve)=>{
             var dbConfigMemory: JSON = JSON.parse(JSON.stringify(dataBaseConfig));
@@ -106,7 +103,7 @@ export class TicTacToe{
                 resolve(true);
             });               
         });
-    }
+    }    
     /** Carga los datos iniciales definidos por el archivo de configuración **/
     private loadInitialData(config: JSON): Promise<boolean>{
         return new Promise((resolve)=>{
@@ -122,14 +119,14 @@ export class TicTacToe{
         for (let pattern of patterns){
             initialPatterns.push(new Pattern(pattern));
         }        
-        global.LongTermMemory.instance.storeInformation(new BasicMemoryUnity("patterns",initialPatterns));        
+        LongTermMemory.instance.storeInformation(new BasicMemoryUnity("patterns",initialPatterns));        
     }
     private loadCategories(categories:string[]){
         var initialCategories: Category[]    =[];
         for (let category of categories){
             initialCategories.push(new Category(category));
         }
-        global.LongTermMemory.instance.storeInformation(new BasicMemoryUnity("categories", initialCategories));
+        LongTermMemory.instance.storeInformation(new BasicMemoryUnity("categories", initialCategories));
     }
     private loadMentalStates(states: JSON){
         var stateTmp: State;
@@ -138,14 +135,15 @@ export class TicTacToe{
         var pKeys: string[] = Object.keys(persistents);
         for (let key of pKeys){
             stateTmp = new State(key, persistents[key]);
-            global.WorkingMemory.instance.setMentalState(stateTmp,false).then((result)=>{});
+            WorkingMemory.instance.setMentalState(stateTmp,false).then((result)=>{});
         };
                 
         var volatiles: JSON =states["volatile"];
         var vKeys: string[] = Object.keys(volatiles);
         for (let key of vKeys){
             stateTmp = new State(key, volatiles[key]);
-            global.WorkingMemory.instance.setMentalState(stateTmp,false).then((result)=>{});
+            WorkingMemory.instance.setMentalState(stateTmp,false).then((result)=>{});
+//            global.WorkingMemory.instance.setMentalState(stateTmp,false).then((result)=>{});
         };
     }
     private loadCognitiveModels(cognitiveModelsJSON: JSON): Promise<boolean>{

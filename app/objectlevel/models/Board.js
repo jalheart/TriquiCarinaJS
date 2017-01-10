@@ -1,16 +1,18 @@
-System.register([], function(exports_1, context_1) {
+System.register(["../../../libs/carina/metacore/Element"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var Element, Board;
+    var Element_1, Board;
     return {
-        setters:[],
-        execute: function() {
-            Element = carina.metacore.Element;
-            /**
-             *
-             * @author jalheart
-             */
-            class Board extends Element {
+        setters: [
+            function (Element_1_1) {
+                Element_1 = Element_1_1;
+            }
+        ],
+        execute: function () {
+            Board = class Board extends Element_1.Element {
+                constructor() {
+                    super();
+                }
                 create(filas, columnas) {
                     this._cells = [];
                     for (var i = 0; i < filas; i++) {
@@ -39,8 +41,16 @@ System.register([], function(exports_1, context_1) {
                 set cells(cells) {
                     this._cells = cells;
                 }
-            }
+                // <editor-fold defaultstate="collapsed" desc="implementación fromJSON">
+                static fromJSON(jsonObject) {
+                    var salida;
+                    salida = new Board();
+                    if (jsonObject._cells)
+                        salida.cells = jsonObject['_cells'];
+                    return salida;
+                }
+            };
             exports_1("Board", Board);
         }
-    }
+    };
 });

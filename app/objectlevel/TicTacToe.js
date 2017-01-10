@@ -1,32 +1,51 @@
-System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/Reasoner'], function(exports_1, context_1) {
+System.register(["../../libs/carina/metacore/State", "../../libs/carina/memory/MemoryDriverIndexDB", "../../libs/carina/memory/BasicMemoryUnity", "../../libs/carina/memory/LongTermMemory", "../../libs/carina/memory/PerceptualMemory", "../../libs/carina/memory/SensorMemory", "../../libs/carina/memory/WorkingMemory", "../../libs/carina/objectlevel/Pattern", "../../libs/carina/objectlevel/Category", "../../libs/carina/objectlevel/BasicCognitiveProcessingUnit", "../../libs/carina/objectlevel/AgentSettings", "../../libs/Consola", "./controllers/Reasoner"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var modulo, mConsola, Reasoner_1;
-    var State, MemoryDriverIndexDB, BasicMemoryUnity, Memory, Pattern, Category, ModelOfTheSelf, BasicCognitiveProcessingUnit, TicTacToe;
+    var State_1, MemoryDriverIndexDB_1, BasicMemoryUnity_1, LongTermMemory_1, PerceptualMemory_1, SensorMemory_1, WorkingMemory_1, Pattern_1, Category_1, BasicCognitiveProcessingUnit_1, AgentSettings_1, Consola_1, Reasoner_1, TicTacToe;
     return {
-        setters:[
-            function (modulo_1) {
-                modulo = modulo_1;
+        setters: [
+            function (State_1_1) {
+                State_1 = State_1_1;
             },
-            function (mConsola_1) {
-                mConsola = mConsola_1;
+            function (MemoryDriverIndexDB_1_1) {
+                MemoryDriverIndexDB_1 = MemoryDriverIndexDB_1_1;
+            },
+            function (BasicMemoryUnity_1_1) {
+                BasicMemoryUnity_1 = BasicMemoryUnity_1_1;
+            },
+            function (LongTermMemory_1_1) {
+                LongTermMemory_1 = LongTermMemory_1_1;
+            },
+            function (PerceptualMemory_1_1) {
+                PerceptualMemory_1 = PerceptualMemory_1_1;
+            },
+            function (SensorMemory_1_1) {
+                SensorMemory_1 = SensorMemory_1_1;
+            },
+            function (WorkingMemory_1_1) {
+                WorkingMemory_1 = WorkingMemory_1_1;
+            },
+            function (Pattern_1_1) {
+                Pattern_1 = Pattern_1_1;
+            },
+            function (Category_1_1) {
+                Category_1 = Category_1_1;
+            },
+            function (BasicCognitiveProcessingUnit_1_1) {
+                BasicCognitiveProcessingUnit_1 = BasicCognitiveProcessingUnit_1_1;
+            },
+            function (AgentSettings_1_1) {
+                AgentSettings_1 = AgentSettings_1_1;
+            },
+            function (Consola_1_1) {
+                Consola_1 = Consola_1_1;
             },
             function (Reasoner_1_1) {
                 Reasoner_1 = Reasoner_1_1;
-            }],
-        execute: function() {
-            State = carina.metacore.State;
-            MemoryDriverIndexDB = carina.memory.MemoryDriverIndexDB;
-            BasicMemoryUnity = carina.memory.BasicMemoryUnity;
-            Pattern = carina.objectlevel.Pattern;
-            Category = carina.objectlevel.Category;
-            BasicCognitiveProcessingUnit = carina.objectlevel.BasicCognitiveProcessingUnit;
-            global.AgentSettings = modulo.objectlevel.AgentSettings;
-            global.LongTermMemory = modulo.memory.LongTermMemory;
-            global.PerceptualMemory = modulo.memory.PerceptualMemory;
-            global.SensorMemory = modulo.memory.SensorMemory;
-            global.WorkingMemory = modulo.memory.WorkingMemory;
-            class TicTacToe {
+            }
+        ],
+        execute: function () {
+            TicTacToe = class TicTacToe {
                 constructor() {
                     this._path = './app/';
                 }
@@ -34,18 +53,20 @@ System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/R
                     this.initConsoles();
                     this.loadJSON(this._path + 'config.json').then((result) => {
                         this._config = result;
-                        global.AgentSettings.config = result;
+                        AgentSettings_1.AgentSettings.config = result;
                         this.initMemories().then(() => {
                             this.loadInitialData(this._config).then((result) => {
                                 this.loadCognitiveModels(this._config["cognitive_models"]).then((result) => {
                                     this.initModelOfTheSelf().then((result) => {
-                                        var workingMemory = global.WorkingMemory.instance;
-                                        workingMemory.bcpu = new BasicCognitiveProcessingUnit();
+                                        var workingMemory = WorkingMemory_1.WorkingMemory.instance;
+                                        var tmpBCPU = new BasicCognitiveProcessingUnit_1.BasicCognitiveProcessingUnit();
+                                        WorkingMemory_1.WorkingMemory.instance.setBCPU(tmpBCPU).then((result) => {
+                                            var reasoner = new Reasoner_1.Reasoner();
+                                        });
+                                        //                            WorkingMemory.instance.bcpu  =new BasicCognitiveProcessingUnit();             
                                         //Esto es usado para mostrar los eventos que sucenden en el sistema
-                                        // List<Event> eventos =new ArrayList<>();
-                                        // wm.storeInformation(new BasicMemoryUnity("events", eventos));
-                                        // var reasoner:Reasoner   =new Reasoner(inputs,out);
-                                        var reasoner = new Reasoner_1.Reasoner();
+                                        //                            reasoner.initSensors();
+                                        //                            reasoner.sensing();
                                         // if(reasoner.perception()){
                                         //     if(reasoner.recognition()){
                                         //         reasoner.categorization();
@@ -80,23 +101,22 @@ System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/R
                 }
                 /** Se inicializan las consolas para mostrar un log de los procesos internos realizados **/
                 initConsoles() {
-                    global.Consola = mConsola.Consola;
-                    var consolaEventos = global.Consola.getConsola('consolaEventos');
+                    var consolaEventos = Consola_1.Consola.getConsola('consolaEventos');
                     consolaEventos.init('consolaEventos');
-                    var consolaEstadosMentales = global.Consola.getConsola('consolaEstadosMentales');
+                    var consolaEstadosMentales = Consola_1.Consola.getConsola('consolaEstadosMentales');
                     consolaEstadosMentales.init('consolaEstadosMentales');
                 }
                 /** Carga la inromación el JSON a las memorias utilizadas por el sistema **/
                 initMemories() {
                     return new Promise((resolve, reject) => {
-                        var config = global.AgentSettings.config;
+                        var config = AgentSettings_1.AgentSettings.config;
                         var memoryConfig = config['memory_management'];
                         if (memoryConfig['type'] === 'indexDB') {
                             var dataBaseConfig = memoryConfig['config'];
-                            this.initMemory(dataBaseConfig, global.LongTermMemory, 'longterm_memory').then((result) => {
-                                this.initMemory(dataBaseConfig, global.PerceptualMemory, 'perceptual_memory').then((result) => {
-                                    this.initMemory(dataBaseConfig, global.SensorMemory, 'sensors').then((result) => {
-                                        this.initMemory(dataBaseConfig, global.WorkingMemory, 'working_memory').then((result) => {
+                            this.initMemory(dataBaseConfig, LongTermMemory_1.LongTermMemory, 'longterm_memory').then((result) => {
+                                this.initMemory(dataBaseConfig, PerceptualMemory_1.PerceptualMemory, 'perceptual_memory').then((result) => {
+                                    this.initMemory(dataBaseConfig, SensorMemory_1.SensorMemory, 'sensors').then((result) => {
+                                        this.initMemory(dataBaseConfig, WorkingMemory_1.WorkingMemory, 'working_memory').then((result) => {
                                             resolve(true);
                                         });
                                     });
@@ -109,7 +129,7 @@ System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/R
                     return new Promise((resolve) => {
                         var dbConfigMemory = JSON.parse(JSON.stringify(dataBaseConfig));
                         dbConfigMemory['tableName'] = tableName;
-                        var memoryDriverMemory = new MemoryDriverIndexDB(dbConfigMemory);
+                        var memoryDriverMemory = new MemoryDriverIndexDB_1.MemoryDriverIndexDB(dbConfigMemory);
                         memoryDriverMemory.init().then((result) => {
                             memory.init(memoryDriverMemory);
                             resolve(true);
@@ -129,16 +149,16 @@ System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/R
                 loadPatterns(patterns) {
                     var initialPatterns = [];
                     for (let pattern of patterns) {
-                        initialPatterns.push(new Pattern(pattern));
+                        initialPatterns.push(new Pattern_1.Pattern(pattern));
                     }
-                    global.LongTermMemory.instance.storeInformation(new BasicMemoryUnity("patterns", initialPatterns));
+                    LongTermMemory_1.LongTermMemory.instance.storeInformation(new BasicMemoryUnity_1.BasicMemoryUnity("patterns", initialPatterns));
                 }
                 loadCategories(categories) {
                     var initialCategories = [];
                     for (let category of categories) {
-                        initialCategories.push(new Category(category));
+                        initialCategories.push(new Category_1.Category(category));
                     }
-                    global.LongTermMemory.instance.storeInformation(new BasicMemoryUnity("categories", initialCategories));
+                    LongTermMemory_1.LongTermMemory.instance.storeInformation(new BasicMemoryUnity_1.BasicMemoryUnity("categories", initialCategories));
                 }
                 loadMentalStates(states) {
                     var stateTmp;
@@ -146,15 +166,15 @@ System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/R
                     var persistents = states["persistents"];
                     var pKeys = Object.keys(persistents);
                     for (let key of pKeys) {
-                        stateTmp = new State(key, persistents[key]);
-                        global.WorkingMemory.instance.setMentalState(stateTmp, false).then((result) => { });
+                        stateTmp = new State_1.State(key, persistents[key]);
+                        WorkingMemory_1.WorkingMemory.instance.setMentalState(stateTmp, false).then((result) => { });
                     }
                     ;
                     var volatiles = states["volatile"];
                     var vKeys = Object.keys(volatiles);
                     for (let key of vKeys) {
-                        stateTmp = new State(key, volatiles[key]);
-                        global.WorkingMemory.instance.setMentalState(stateTmp, false).then((result) => { });
+                        stateTmp = new State_1.State(key, volatiles[key]);
+                        WorkingMemory_1.WorkingMemory.instance.setMentalState(stateTmp, false).then((result) => { });
                     }
                     ;
                 }
@@ -179,8 +199,8 @@ System.register(["../../libs/CarinaCore", '../../libs/Consola', './controllers/R
                         //        m.processInformation(null);
                     });
                 }
-            }
+            };
             exports_1("TicTacToe", TicTacToe);
         }
-    }
+    };
 });

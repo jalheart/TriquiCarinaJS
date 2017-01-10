@@ -1,0 +1,30 @@
+import { Memory } from './Memory';
+import { BasicCognitiveProcessingUnit } from '../objectlevel/BasicCognitiveProcessingUnit';
+import { Profile } from '../metacore/Profile';
+import { State } from '../metacore/State';
+import { ModelOfTheWorld } from '../objectlevel/ModelOfTheWorld';
+import { MemoryDriver } from './MemoryDriver';
+export declare class WorkingMemory extends Memory {
+    private static _instance;
+    private _bcpu;
+    private _model_of_the_world;
+    private _profiles;
+    private _mental_state;
+    private constructor(driver);
+    static init(driver: MemoryDriver): void;
+    bcpu: BasicCognitiveProcessingUnit;
+    getBCPU(): Promise<BasicCognitiveProcessingUnit>;
+    setBCPU(bcpu: BasicCognitiveProcessingUnit): Promise<boolean>;
+    modelOfTheWorld: ModelOfTheWorld;
+    getProfile(id: number): Profile;
+    readonly profiles: Profile[];
+    setProfiles(profile: Profile, s?: boolean): void;
+    mentalStates: State[];
+    getMentalState(state: string): State;
+    updateMentalState(name: string, value: boolean): Promise<boolean>;
+    setMentalState(ms: State, s?: boolean): Promise<boolean>;
+    static readonly instance: WorkingMemory;
+    private getMentalStatePos(name);
+    syncBCPU(value: BasicCognitiveProcessingUnit): Promise<boolean>;
+    syncModelOfTheWorld(value: ModelOfTheWorld): void;
+}

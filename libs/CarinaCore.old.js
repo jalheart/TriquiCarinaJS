@@ -376,6 +376,7 @@ var carina;
     (function (memory) {
         class Memory {
             constructor(driver) {
+                this._driver = null;
                 this._driver = driver;
             }
             storeInformation(information) {

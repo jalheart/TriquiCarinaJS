@@ -2,19 +2,14 @@ export declare class TicTacToe {
     private _path;
     private _config;
     init(): void;
+    /** Se usa para cargar el archivo de configuración **/
     private loadJSON(url);
-    /**
-     * Se inicializan las consolas para mostrar un log de los procesos internos realizados
-     */
+    /** Se inicializan las consolas para mostrar un log de los procesos internos realizados **/
     private initConsoles();
-    /**
-     * Carga la inromación el JSON a las memorias utilizadas por el sistema
-     */
+    /** Carga la inromación el JSON a las memorias utilizadas por el sistema **/
     private initMemories();
     private initMemory(dataBaseConfig, memory, tableName);
-    /**
-     * Carga los datos iniciales definidos por el archivo de configuración
-     */
+    /** Carga los datos iniciales definidos por el archivo de configuración **/
     private loadInitialData(config);
     private loadPatterns(patterns);
     private loadCategories(categories);

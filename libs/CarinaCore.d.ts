@@ -1,5 +1,5 @@
-declare module carina.metacore {
-    abstract class RootElement {
+declare module "metacore/RootElement" {
+    export abstract class RootElement {
         private _name;
         private _output;
         constructor();
@@ -7,51 +7,62 @@ declare module carina.metacore {
         output: string;
     }
 }
-declare module carina.metacore {
-    abstract class Element extends RootElement {
+declare module "metacore/Element" {
+    import { RootElement } from "metacore/RootElement";
+    export abstract class Element extends RootElement {
     }
 }
-declare module carina.metacore {
-    class Event extends Element {
+declare module "metacore/Event" {
+    import { Element } from "metacore/Element";
+    export class Event extends Element {
         constructor(name: string);
     }
 }
-declare module carina.metacore {
-    abstract class CognitiveFunction extends Element {
+declare module "metacore/CognitiveFunction" {
+    import { Element } from "metacore/Element";
+    export abstract class CognitiveFunction extends Element {
         abstract processInformation(value: any): Promise<any>;
     }
 }
-declare module carina.metacore {
-    abstract class EstructureElement extends RootElement {
+declare module "metacore/EstructureElement" {
+    import { RootElement } from "metacore/RootElement";
+    export abstract class EstructureElement extends RootElement {
     }
 }
-declare module carina.metacore {
-    class Field extends RootElement {
+declare module "metacore/Field" {
+    import { RootElement } from "metacore/RootElement";
+    export class Field extends RootElement {
         private _value;
         constructor(name: string, value: any);
         value: any;
     }
 }
-declare module carina.metacore {
-    abstract class Profile extends RootElement {
+declare module "metacore/Profile" {
+    import { RootElement } from "metacore/RootElement";
+    export abstract class Profile extends RootElement {
     }
 }
-declare module carina.metacore {
-    class ReasoningTaskProfile extends Profile {
+declare module "metacore/ReasoningTaskProfile" {
+    import { Profile } from "metacore/Profile";
+    import { Field } from "metacore/Field";
+    export class ReasoningTaskProfile extends Profile {
         private _fields;
         ReasoningTaskProfile(fields: Field[]): void;
         setField(name: string, value: any): void;
     }
 }
-declare module carina.metacore {
-    class State extends Element {
+declare module "metacore/State" {
+    import { Element } from "metacore/Element";
+    export class State extends Element {
         private _value;
         constructor(name: string, value: boolean);
         value: boolean;
     }
 }
-declare module carina.metacore {
-    abstract class FuntionalElement extends RootElement {
+declare module "metacore/FuntionalElement" {
+    import { RootElement } from "metacore/RootElement";
+    import { State } from "metacore/State";
+    export abstract class FuntionalElement extends RootElement {
         state: State;
         startTime: any;
         endTime: any;
@@ -62,16 +73,21 @@ declare module carina.metacore {
         precodition: State;
     }
 }
-declare module carina.metacore {
-    class Goal extends Element {
+declare module "metacore/Goal" {
+    import { Element } from "metacore/Element";
+    import { State } from "metacore/State";
+    export class Goal extends Element {
         private _sourceState;
         private _targetState;
         sourceState: State;
         targetState: State;
     }
 }
-declare module carina.metacore {
-    abstract class Task extends FuntionalElement {
+declare module "metacore/Task" {
+    import { FuntionalElement } from "metacore/FuntionalElement";
+    import { State } from "metacore/State";
+    import { Goal } from "metacore/Goal";
+    export abstract class Task extends FuntionalElement {
         private _goal;
         protected _effects: State[];
         protected _preconditions: State[];
@@ -98,21 +114,26 @@ declare module carina.metacore {
         private getPreconditionS(name);
     }
 }
-declare module carina.metacore {
-    abstract class Action extends Task {
+declare module "metacore/Action" {
+    import { Task } from "metacore/Task";
+    export abstract class Action extends Task {
     }
 }
-declare module carina.metacore {
-    abstract class Strategy extends FuntionalElement {
+declare module "metacore/Strategy" {
+    import { FuntionalElement } from "metacore/FuntionalElement";
+    export abstract class Strategy extends FuntionalElement {
         abstract run(): any;
     }
 }
-declare module carina.metacore {
-    abstract class ComputationalStrategy extends Strategy {
+declare module "metacore/ComputationalStrategy" {
+    import { Strategy } from "metacore/Strategy";
+    export abstract class ComputationalStrategy extends Strategy {
     }
 }
-declare module carina.metacore {
-    class Plan extends Element {
+declare module "metacore/Plan" {
+    import { Element } from "metacore/Element";
+    import { Task } from "metacore/Task";
+    export class Plan extends Element {
         private _actions;
         private _currentAction;
         Plan(): void;
@@ -123,15 +144,16 @@ declare module carina.metacore {
         currentAction: number;
     }
 }
-declare module carina.memory {
-    class BasicMemoryUnity {
+declare module "memory/BasicMemoryUnity" {
+    export class BasicMemoryUnity {
         cue: string;
         information: any;
         constructor(cue: string, information: any);
     }
 }
-declare module carina.memory {
-    abstract class MemoryDriver {
+declare module "memory/MemoryDriver" {
+    import { BasicMemoryUnity } from "memory/BasicMemoryUnity";
+    export abstract class MemoryDriver {
         private _config;
         constructor(config: any);
         abstract init(): Promise<boolean>;
@@ -141,8 +163,10 @@ declare module carina.memory {
         config: any;
     }
 }
-declare module carina.memory {
-    abstract class Memory {
+declare module "memory/Memory" {
+    import { MemoryDriver } from "memory/MemoryDriver";
+    import { BasicMemoryUnity } from "memory/BasicMemoryUnity";
+    export abstract class Memory {
         private _driver;
         constructor(driver: MemoryDriver);
         storeInformation(information: BasicMemoryUnity): Promise<boolean>;
@@ -151,25 +175,30 @@ declare module carina.memory {
         driver: MemoryDriver;
     }
 }
-declare module carina.memory {
-    class LongTermMemory extends Memory {
+declare module "memory/LongTermMemory" {
+    import { Memory } from "memory/Memory";
+    import { MemoryDriver } from "memory/MemoryDriver";
+    export class LongTermMemory extends Memory {
         private static _instance;
         private constructor(driver);
         static init(driver: MemoryDriver): void;
         static readonly instance: LongTermMemory;
     }
 }
-declare module carina.memory {
-    class SensorMemory extends Memory {
+declare module "memory/SensorMemory" {
+    import { Memory } from "memory/Memory";
+    import { MemoryDriver } from "memory/MemoryDriver";
+    export class SensorMemory extends Memory {
         private static _instance;
         private constructor(driver);
         static init(driver: MemoryDriver): void;
         static readonly instance: SensorMemory;
     }
 }
-declare module carina.metacore {
-    import SensorMemory = carina.memory.SensorMemory;
-    abstract class Sensor extends RootElement {
+declare module "metacore/Sensor" {
+    import { SensorMemory } from "memory/SensorMemory";
+    import { RootElement } from "metacore/RootElement";
+    export abstract class Sensor extends RootElement {
         private _type;
         private _sensorMemory;
         constructor();
@@ -178,21 +207,40 @@ declare module carina.metacore {
         readonly sensorMemory: SensorMemory;
     }
 }
-declare module carina.objectlevel {
-    import Goal = carina.metacore.Goal;
-    class ModelOfTheWorld {
-        private _mission;
-        private _isCreated;
-        mission: Goal;
-        getStateIsCreated(): Promise<boolean>;
-        stateIsCreated: boolean;
+declare module "objectlevel/Input" {
+    import { RootElement } from "metacore/RootElement";
+    export class Input extends RootElement {
+        private _information;
+        private _type;
+        constructor(information?: any, type?: string);
+        information: any;
+        type: string;
     }
 }
-declare module carina.objectlevel {
-    import RootElement = carina.metacore.RootElement;
-    import Plan = carina.metacore.Plan;
-    import Goal = carina.metacore.Goal;
-    class BasicCognitiveProcessingUnit extends RootElement {
+declare module "objectlevel/Pattern" {
+    import { RootElement } from "metacore/RootElement";
+    export class Pattern extends RootElement {
+        private _pattern;
+        constructor(pattern?: any);
+        pattern: any;
+    }
+}
+declare module "objectlevel/Category" {
+    import { RootElement } from "metacore/RootElement";
+    export class Category extends RootElement {
+        private _category;
+        constructor(category?: any);
+        category: any;
+    }
+}
+declare module "objectlevel/BasicCognitiveProcessingUnit" {
+    import { RootElement } from "metacore/RootElement";
+    import { Input } from "objectlevel/Input";
+    import { Pattern } from "objectlevel/Pattern";
+    import { Category } from "objectlevel/Category";
+    import { Plan } from "metacore/Plan";
+    import { Goal } from "metacore/Goal";
+    export class BasicCognitiveProcessingUnit extends RootElement {
         private _inputs;
         private _pattern;
         private _categorys;
@@ -211,10 +259,14 @@ declare module carina.objectlevel {
         goal: Goal;
     }
 }
-declare module carina.memory {
-    import cmc = carina.metacore;
-    import col = carina.objectlevel;
-    class WorkingMemory extends Memory {
+declare module "memory/WorkingMemory" {
+    import { Memory } from "memory/Memory";
+    import { BasicCognitiveProcessingUnit } from "objectlevel/BasicCognitiveProcessingUnit";
+    import { Profile } from "metacore/Profile";
+    import { State } from "metacore/State";
+    import { ModelOfTheWorld } from "objectlevel/ModelOfTheWorld";
+    import { MemoryDriver } from "memory/MemoryDriver";
+    export class WorkingMemory extends Memory {
         private static _instance;
         private _bcpu;
         private _model_of_the_world;
@@ -222,23 +274,35 @@ declare module carina.memory {
         private _mental_state;
         private constructor(driver);
         static init(driver: MemoryDriver): void;
-        bcpu: col.BasicCognitiveProcessingUnit;
-        modelOfTheWorld: col.ModelOfTheWorld;
-        getProfile(id: number): cmc.Profile;
-        readonly profiles: cmc.Profile[];
-        setProfiles(profile: cmc.Profile, s?: boolean): void;
-        mentalStates: cmc.State[];
-        getMentalState(state: string): cmc.State;
+        bcpu: BasicCognitiveProcessingUnit;
+        modelOfTheWorld: ModelOfTheWorld;
+        getProfile(id: number): Profile;
+        readonly profiles: Profile[];
+        setProfiles(profile: Profile, s?: boolean): void;
+        mentalStates: State[];
+        getMentalState(state: string): State;
         updateMentalState(name: string, value: boolean): Promise<boolean>;
-        setMentalState(ms: cmc.State, s?: boolean): Promise<boolean>;
+        setMentalState(ms: State, s?: boolean): Promise<boolean>;
         static readonly instance: WorkingMemory;
         private getMentalStatePos(name);
-        syncBCPU(value: col.BasicCognitiveProcessingUnit): void;
-        syncModelOfTheWorld(value: col.ModelOfTheWorld): void;
+        syncBCPU(value: BasicCognitiveProcessingUnit): void;
+        syncModelOfTheWorld(value: ModelOfTheWorld): void;
     }
 }
-declare module carina.memory {
-    class MemoryDriverIndexDB extends MemoryDriver {
+declare module "objectlevel/ModelOfTheWorld" {
+    import { Goal } from "metacore/Goal";
+    export class ModelOfTheWorld {
+        private _mission;
+        private _isCreated;
+        mission: Goal;
+        getStateIsCreated(): Promise<boolean>;
+        stateIsCreated: boolean;
+    }
+}
+declare module "memory/MemoryDriverIndexDB" {
+    import { MemoryDriver } from "memory/MemoryDriver";
+    import { BasicMemoryUnity } from "memory/BasicMemoryUnity";
+    export class MemoryDriverIndexDB extends MemoryDriver {
         private _dataBase;
         constructor(config: any);
         init(): Promise<boolean>;
@@ -247,105 +311,84 @@ declare module carina.memory {
         forgetInformation(cue: string): Promise<boolean>;
     }
 }
-declare module carina.memory {
-    class PerceptualMemory extends Memory {
+declare module "memory/PerceptualMemory" {
+    import { Memory } from "memory/Memory";
+    import { MemoryDriver } from "memory/MemoryDriver";
+    export class PerceptualMemory extends Memory {
         private static _instance;
         private constructor(driver);
         static init(driver: MemoryDriver): void;
         static readonly instance: PerceptualMemory;
     }
 }
-declare module carina.objectlevel {
-    import RootElement = carina.metacore.RootElement;
-    class AgentSettings extends RootElement {
+declare module "objectlevel/AgentSettings" {
+    import { RootElement } from "metacore/RootElement";
+    export class AgentSettings extends RootElement {
         static db_settings: string[];
         static config: JSON;
     }
 }
-declare module carina.objectlevel {
-    import RootElement = carina.metacore.RootElement;
-    class Actuator extends RootElement {
+declare module "objectlevel/Actuator" {
+    import { RootElement } from "metacore/RootElement";
+    export class Actuator extends RootElement {
     }
 }
-declare module carina.objectlevel {
-    import RootElement = carina.metacore.RootElement;
-    class Pattern extends RootElement {
-        private _pattern;
-        constructor(pattern?: any);
-        pattern: any;
-    }
-}
-declare module carina.objectlevel {
-    import RootElement = carina.metacore.RootElement;
-    class Category extends RootElement {
-        private _category;
-        constructor(category?: any);
-        category: any;
-    }
-}
-declare module carina.objectlevel {
-    import RootElement = carina.metacore.RootElement;
-    class Input extends RootElement {
-        private _information;
-        private _type;
-        constructor(information?: any, type?: string);
-        information: any;
-        type: string;
-    }
-}
-declare module carina.objectlevel {
-    import CognitiveFunction = carina.metacore.CognitiveFunction;
-    class Planning extends CognitiveFunction {
+declare module "objectlevel/Planning" {
+    import { CognitiveFunction } from "metacore/CognitiveFunction";
+    export class Planning extends CognitiveFunction {
         processInformation(value: any): any;
         private processInformationComputationalStrategy(value);
         executePlans(): any;
     }
 }
-declare module carina.objectlevel {
-    import CognitiveFunction = carina.metacore.CognitiveFunction;
-    import ComputationalStrategy = carina.metacore.ComputationalStrategy;
-    class Categorization extends CognitiveFunction {
+declare module "objectlevel/Categorization" {
+    import { CognitiveFunction } from "metacore/CognitiveFunction";
+    import { ComputationalStrategy } from "metacore/ComputationalStrategy";
+    import { Category } from "objectlevel/Category";
+    export class Categorization extends CognitiveFunction {
         processInformation(value: any): any;
         processInformationComputationalStrategy(value: new (categories: Category[]) => ComputationalStrategy): Promise<any[]>;
         getCategories(): Promise<Category[]>;
     }
 }
-declare module carina.objectlevel {
-    import Task = carina.metacore.Task;
-    abstract class CognitiveTask extends Task {
+declare module "objectlevel/CognitiveTask" {
+    import { Task } from "metacore/Task";
+    export abstract class CognitiveTask extends Task {
     }
 }
-declare module carina.objectlevel {
-    import Event = carina.metacore.Event;
-    class MemoryEvent extends Event {
+declare module "objectlevel/MemoryEvent" {
+    import { Event } from "metacore/Event";
+    export class MemoryEvent extends Event {
     }
 }
-declare module carina.objectlevel {
-    import Sensor = carina.metacore.Sensor;
-    class MouseSensor extends Sensor {
+declare module "objectlevel/MouseSensor" {
+    import { Sensor } from "metacore/Sensor";
+    export class MouseSensor extends Sensor {
         constructor();
     }
 }
-declare module carina.objectlevel {
-    import CognitiveFunction = carina.metacore.CognitiveFunction;
-    class Perception extends CognitiveFunction {
+declare module "objectlevel/Perception" {
+    import { CognitiveFunction } from "metacore/CognitiveFunction";
+    import { BasicCognitiveProcessingUnit } from "objectlevel/BasicCognitiveProcessingUnit";
+    export class Perception extends CognitiveFunction {
         private _perception;
         processInformation(value: any[]): any;
         private processInformationObject(value);
         perception: BasicCognitiveProcessingUnit;
     }
 }
-declare module carina.objectlevel {
-    import Event = carina.metacore.Event;
-    import Profile = carina.metacore.Profile;
-    class ReasoningEvent extends Event {
+declare module "objectlevel/ReasoningEvent" {
+    import { Event } from "metacore/Event";
+    import { Profile } from "metacore/Profile";
+    export class ReasoningEvent extends Event {
         private _profile;
         profile: Profile;
     }
 }
-declare module carina.objectlevel {
-    import Strategy = carina.metacore.Strategy;
-    class ReasoningTask extends CognitiveTask {
+declare module "objectlevel/ReasoningTask" {
+    import { Strategy } from "metacore/Strategy";
+    import { CognitiveTask } from "objectlevel/CognitiveTask";
+    export class ReasoningTask extends CognitiveTask {
         private _strategys;
         buildProfile(): void;
         run(): any;
@@ -354,19 +397,19 @@ declare module carina.objectlevel {
         getStrategy(pos: number): Strategy;
     }
 }
-declare module carina.objectlevel {
-    import CognitiveFunction = carina.metacore.CognitiveFunction;
-    class Recognition extends CognitiveFunction {
+declare module "objectlevel/Recognition" {
+    import { CognitiveFunction } from "metacore/CognitiveFunction";
+    export class Recognition extends CognitiveFunction {
         processInformation(value: any): Promise<any>;
         processInformationComputationalStrategy(value: any): Promise<boolean>;
         private checkText();
     }
 }
-declare namespace carina.modeloftheself {
-    import Profile = carina.metacore.Profile;
-    import Event = carina.metacore.Event;
-    import CognitiveFunction = carina.metacore.CognitiveFunction;
-    class ModelOfTheSelf {
+declare module "modeloftheself/ModelOfTheSelf" {
+    import { Profile } from "metacore/Profile";
+    import { Event } from "metacore/Event";
+    import { CognitiveFunction } from "metacore/CognitiveFunction";
+    export class ModelOfTheSelf {
         private _profiles;
         private _events;
         private _knownCognitiveFunctions;
