@@ -1,4 +1,5 @@
-//TODO A cada clase se le debe agregar un metodo estático llamado fromJSON  que se encarga de crear una intancia con base en un json obtenido de la memoria                                    
+//TODO A cada clase se le debe agregar un metodo estático llamado fromJSON  que se encarga de crear una intancia con base en un json obtenido de la memoria
+//FIXME Si gana la maquina, se cambian los tokens, pero internamentes siguen igual
 import { State} from '../../libs/carina/metacore/State';
 import { MemoryDriverIndexDB } from '../../libs/carina/memory/MemoryDriverIndexDB';
 import { BasicMemoryUnity } from '../../libs/carina/memory/BasicMemoryUnity';
