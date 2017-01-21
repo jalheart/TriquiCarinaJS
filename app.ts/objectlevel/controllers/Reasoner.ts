@@ -20,151 +20,185 @@ import { PlanningAlgorithmStrategy} from '../computationalstrategies/PlanningAlg
 /**
  * Se encarga de realizar el proceso de razonamiento del triqui
  */
-export class Reasoner{
-    private _workingMemory:WorkingMemory;
-    private _perception:Perception;
-    private _playerMovement :PlayerMovement;//Es el sensor
-    private _resetButton: ResetButton;//Es el sensor
-    private _recognition:Recognition;
-    private _categorization:Categorization;
-    private _planning:Planning;
-    private _plans:Plan[];
-    private _inputs:string[][]  =[];
-    private _output:any;
-    constructor(inputs?:string[][],output?:any){
-        this._inputs = inputs ? inputs:[];
-        this._output = output ? output:null;
-        this._workingMemory =WorkingMemory.instance;        
-        if(this._workingMemory.modelOfTheWorld==null){
-            var modelOfTheWorld:TriquiModelOfTheWorld   =new TriquiModelOfTheWorld();
-            modelOfTheWorld.addMission("win_game");
-            modelOfTheWorld.addTokens("O", "X");
-            this._workingMemory.modelOfTheWorld =modelOfTheWorld;
+export class Reasoner{    
+    private _workingMemory:WorkingMemory;//Accesos a la memoria de trabajo
+    private _perception:Perception;//Acceso al sistema de percepción
+    private _playerMovement :PlayerMovement;//Sensor utilizado para las jugadas del jugador
+    private _resetButton: ResetButton;//Sensor utilizado para reiniciar el juego
+    private _recognition:Recognition;//Acceso al sistema de reconocimiento
+    private _categorization:Categorization;//Acceso a sistema de configuración
+    private _planning:Planning;//Acceso al sistema de planeación
+    /**
+     * EN el constructor se inicializan los elementos necesarios para que el razonador pueda realizar su trabajo
+     */
+    constructor(){
+        this._workingMemory =WorkingMemory.instance;//Se obtiene una instancia de la mamoria de trabaja para un acceso rápido
+        if(this._workingMemory.modelOfTheWorld==null){//En caso de que no exista un modelo del mundo definido
+            var modelOfTheWorld:TriquiModelOfTheWorld   =new TriquiModelOfTheWorld();//Se crea un modelo del mundo
+            modelOfTheWorld.addMission("win_game");//Se define la misión(Goal) principal
+            modelOfTheWorld.addTokens("O", "X");//Se agregan los tokens(Fichas de jugadores)
+            this._workingMemory.modelOfTheWorld =modelOfTheWorld;//EL nuevo modelo del mundo es registrado en la memoria de trabajo
         }
         
-        this.initSensors();
-        this._recognition      =new Recognition();
-        this._categorization   =new Categorization();
-        this._perception       =new Perception();
-        this._planning         =new Planning();
-        this._plans            =[];
-        WorkingMemory.instance.getBCPU().then((bcpu)=>{
-            bcpu.categorys = [new Category('init')];
-            WorkingMemory.instance.setBCPU(bcpu).then((result)=>{
-                this.cicloCognitivo();
+        this.initSensors();//Se inicializan los sensores
+        this._perception       =new Perception();//Se inicializa el sistema de percepción
+        this._recognition      =new Recognition();//Se inicializa el sistema de reconocimiento
+        this._categorization   =new Categorization();//Se inicializa el sistema de categorización
+        this._planning         =new Planning();//Se inicializa el sistema de planeación
+        WorkingMemory.instance.getBCPU().then((bcpu)=>{//Se obtine la BasicCognitivePoccessingUnity desde la memoria de trabajo
+            bcpu.categorys = [new Category('init')];//Se agrega una categoría a la BCPU
+            WorkingMemory.instance.setBCPU(bcpu).then((result)=>{//Se actualiza la BCPU en la memoria de trabajo
+                this.cognitiveLoop();//Se inicia un ciclo cognitivo
             });
         });
         // this.plans  =new HashMap<>();
 //         Consola.getConsola('consolaEstadosMentales').log(WorkingMemory.instance.bcpu.name);
     }
+    /**
+     * Proceso de inicialización de los sensores
+     */
     public initSensors(){
-        this._playerMovement   =new PlayerMovement();
-        this._playerMovement.addEventListener('sensing', this.sensing);
-        this._resetButton = new ResetButton();
-        this._resetButton.addEventListener('sensing', this.sensing);
+        this._playerMovement   =new PlayerMovement();//Se obtiene una instancia de sonsor encargado de registrar las jugadas
+        this._playerMovement.addEventListener('sensing', this.sensing);//Se asocia una acción a realizar cada vez que sea activado el sensor
+        this._resetButton = new ResetButton();//Se obtiene una instancia de sonsor encargado de registrar el reinicio del juego
+        this._resetButton.addEventListener('sensing', this.sensing);//Se asocia una acción a realizar cada vez que sea activado el sensor
     }
     public sensing = (sensor: Sensor)=>{
-        this.cicloCognitivo(sensor);
+        //Cada vez que se active un sensor, se inicia un ciclo cognitivo
+        this.cognitiveLoop(sensor);
     }
     /**
-     * Se encarga de la percepción del agente, se llega aquí despues de que un sensor se ha disparado
+     * El ciclo cognitvo a desarrollar por el agente
      */
-     public cicloCognitivo(sensor?: Sensor){
-         if (sensor){
-            Consola.getConsola('consolaEventos').log('Sensing....');        
-            this.perception(sensor).then((perceived)=>{
+     public cognitiveLoop(sensor?: Sensor){
+         if (sensor){//Si el ciclo cognitivo es iniciado por un sensor
+            Consola.getConsola('consolaEventos').log('Sensing....');//Se nuestra en la consola de eventos el paso actual del proceso cognitivo
+            this.perception(sensor).then((perceived)=>{//Se realiza el proceso de percepción, utilizando el sensor que inicio el ciclo cognitivo.
+                //Una vez se termine el proceso de percepción,
+                //se intenta identificar la información percibida
+                //mediante un proceso de reconocimiento
                 this.recognition().then((recognized)=>{
+                    //Si la información percibida se puede reconocer
                     if (recognized){
+                        //Una vez reconocida la iformación percibida,
+                        //se intenta categorizar para su procesamiento
                         this.categorization().then((categorized)=>{
+                            //Si la información percibida se encuentra dentro de una del las categorías conocidas
                             if(categorized){
+                                //Se intenta realizar el proceso de planeación
                                 this.planning().then((plans)=>{
+                                    //Una vez obtenido un(os) plan(es)
+                                    //Son ejecutadas las cciones definidas
                                     this.run(plans).then((executed)=>{                                    
                                     });
                                 });
                             }else{
+                                //Si la información percibida no se encuentra dentro de una del las categorías conocidas
+                                //Se muestra en la consola de eventos.
                                 Consola.getConsola('consolaEventos').log('No associated category ...');
                             }
                         });
+                    }else{
+                        //Si la información percibida no pudo ser reconocida
+                        //Se muestra en la consola de eventos.
+                        Consola.getConsola('consolaEventos').log('No recognized ...');
                     }
                 });
             });
-            this.showBoard();
-         }else{
+         }else{//El ciclo cognitivo no es iniciado por un sensor; en este caso, es iniciado cuando el sistema inicia o recarga(Despierta)
+            //Se intenta realizar el proceso de planeación
             this.planning().then((plans)=>{
+                //Una vez obtenido un(os) plan(es)
+                //Son ejecutadas las cciones definidas
                 this.run(plans).then((executed)=>{
                 });
             });
-         }        
-        /*
-        if (sensor.type==='player_move'){//Es posible que este condicional no sea necesario
-            this.perception(sensor).then((perceived)=>{
-                this.recognition().then((recognized)=>{
-                    console.log(recognized);
-                });
-            });
-        }else if (sensor.type==='reset'){
-            this.perception(sensor).then((perceived)=>{
-                this.recognition().then((recognized)=>{
-                    console.log(recognized);
-                });
-            });
-        }
-        */
-     }
+        }        
+    }
+    /**
+     * Actividad interna del razonador para realizar la percepción
+     */
     public perception(sensor: Sensor): Promise<boolean>{
         return new Promise((resolve)=>{
+            //Se recuperan los datos registrados por el sensor en la memoria sensorial
             sensor.sensorMemory.retrieveInformation(sensor.type).then((result)=>{
                 var param:any={
                     'information':result.information,
                     'type_sensor':result.cue
                 }
+                //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
                 Consola.getConsola('consolaEventos').log('Perceiving...');
-                this._perception.processInformation(param).then((result)=>{
+                //Se intentan procesar los datos generados por el sensor con el sistema de percepción
+                //Este internamente envia los resultados a la BCPU
+                this._perception.processInformation(param).then((result)=>{                    
                     resolve(true);
                 });
             });  
         });
     }
+    /**
+     * Actividad interna del razonador para realizar el reconocimiento
+     */
     public recognition(): Promise<boolean>{
         return new Promise((resolve)=>{
+            //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
             Consola.getConsola('consolaEventos').log('Recognizing...');
+            //Se intentan procesar los datos generados por el sistema de percepción y que se encuentran en la BCPU
+            //Para identificarlos y definir si son reconocidos, usa el sistema de reconocimiento
             this._recognition.processInformation().then((recognized)=>{
+                //Una vez obtenido un resultado, se ectualiza el estado menta correspondiente
                 WorkingMemory.instance.updateMentalState("is_recognized", recognized).then((result)=>{
+                    //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
                     Consola.getConsola('consolaEventos').log(recognized?'Recognized...':'No recognized...');
                     resolve(recognized);
                 });
             });
         });
     }
+    /**
+     * Actividad interna del razonador para realizar la categorización
+     */
     public categorization(): Promise<boolean>{
         return new Promise((resolve)=>{
+            //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
             Consola.getConsola('consolaEventos').log('Categorizing...');
-            this._categorization.processInformation(CategorizationAlgorithmStrategy).then((categorized)=>{                
+            //Se intentan procesar los datos generados por el sistema de reconocimiento y que se encuentran en la BCPU
+            //Para enmarcarlos dentro de la categorias conocidas.
+            //Es necesario decir al sistema de categorización cual será la estrategia a utilizar
+            this._categorization.processInformation(CategorizationAlgorithmStrategy).then((categorized)=>{
+                //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
                 Consola.getConsola('consolaEventos').log(categorized?'Categorized...':'No categorized...');
                 resolve(categorized);
             });
         });
     }
+    /**
+     * Actividad interna del razonador para realizar la planeación
+     */
     public planning(): Promise<any>{
         return new Promise((resolve)=>{
+            //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
             Consola.getConsola('consolaEventos').log('Planning...');
-            this._planning.processInformation(PlanningAlgorithmStrategy).then((plans)=>{                
+            //Se intentan realizar la planeación con base en la categorización previa y que se encuentran en la BCPU            
+            //Es necesario decir al sistema de planeación cual será la estrategia a utilizar
+            this._planning.processInformation(PlanningAlgorithmStrategy).then((plans)=>{
+                //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
                 Consola.getConsola('consolaEventos').log('Planned...');
                 resolve(plans);
             });
         });
     }
-    public run(plans:any): Promise<boolean>{        
+    /**
+     * Actividad interna del razonador para la ejecuación de los planes
+     */
+    public run(plans:any): Promise<boolean>{
         return new Promise((resolve)=>{
+            //Se muestra en la consola de eventos, el proceso actual del ciclo cognitivo
             Consola.getConsola('consolaEventos').log('Executing plan...');
+            //Se intentan ejecutar las acciones definidas en los planes que se encuentran en la bcpu            
             this._planning.executePlans(plans).then((executed)=>{
                 resolve(executed);                
             });
         });
-    }
-    public showBoard(): Promise<any>{
-        return new Promise((resolve)=>{
-            Consola.getConsola('consolaEventos').log('Acting...');            
-        });
-    }
+    }    
 }

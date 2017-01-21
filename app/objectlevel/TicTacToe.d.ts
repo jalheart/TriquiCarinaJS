@@ -1,4 +1,5 @@
-export declare class TicTacToe {
+import { Agent } from '../../libs/carina/objectlevel/Agent';
+export declare class TicTacToe extends Agent {
     private _path;
     private _config;
     init(): void;

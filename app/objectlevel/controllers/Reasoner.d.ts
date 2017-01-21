@@ -10,20 +10,37 @@ export declare class Reasoner {
     private _recognition;
     private _categorization;
     private _planning;
-    private _plans;
-    private _inputs;
-    private _output;
-    constructor(inputs?: string[][], output?: any);
+    /**
+     * EN el constructor se inicializan los elementos necesarios para que el razonador pueda realizar su trabajo
+     */
+    constructor();
+    /**
+     * Proceso de inicialización de los sensores
+     */
     initSensors(): void;
     sensing: (sensor: Sensor) => void;
     /**
-     * Se encarga de la percepción del agente, se llega aquí despues de que un sensor se ha disparado
+     * El ciclo cognitvo a desarrollar por el agente
      */
-    cicloCognitivo(sensor?: Sensor): void;
+    cognitiveLoop(sensor?: Sensor): void;
+    /**
+     * Actividad interna del razonador para realizar la percepción
+     */
     perception(sensor: Sensor): Promise<boolean>;
+    /**
+     * Actividad interna del razonador para realizar el reconocimiento
+     */
     recognition(): Promise<boolean>;
+    /**
+     * Actividad interna del razonador para realizar la categorización
+     */
     categorization(): Promise<boolean>;
+    /**
+     * Actividad interna del razonador para realizar la planeación
+     */
     planning(): Promise<any>;
+    /**
+     * Actividad interna del razonador para la ejecuación de los planes
+     */
     run(plans: any): Promise<boolean>;
-    showBoard(): Promise<any>;
 }

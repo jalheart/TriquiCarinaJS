@@ -1,7 +1,7 @@
-System.register(["../../libs/carina/metacore/State", "../../libs/carina/memory/MemoryDriverIndexDB", "../../libs/carina/memory/BasicMemoryUnity", "../../libs/carina/memory/LongTermMemory", "../../libs/carina/memory/PerceptualMemory", "../../libs/carina/memory/SensorMemory", "../../libs/carina/memory/WorkingMemory", "../../libs/carina/objectlevel/Pattern", "../../libs/carina/objectlevel/Category", "../../libs/carina/objectlevel/BasicCognitiveProcessingUnit", "../../libs/carina/objectlevel/AgentSettings", "../../libs/Consola", "./controllers/Reasoner"], function (exports_1, context_1) {
+System.register(["../../libs/carina/metacore/State", "../../libs/carina/memory/MemoryDriverIndexDB", "../../libs/carina/memory/BasicMemoryUnity", "../../libs/carina/memory/LongTermMemory", "../../libs/carina/memory/PerceptualMemory", "../../libs/carina/memory/SensorMemory", "../../libs/carina/memory/WorkingMemory", "../../libs/carina/objectlevel/Pattern", "../../libs/carina/objectlevel/Category", "../../libs/carina/objectlevel/BasicCognitiveProcessingUnit", "../../libs/carina/objectlevel/Agent", "../../libs/carina/objectlevel/AgentSettings", "../../libs/Consola", "./controllers/Reasoner"], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var State_1, MemoryDriverIndexDB_1, BasicMemoryUnity_1, LongTermMemory_1, PerceptualMemory_1, SensorMemory_1, WorkingMemory_1, Pattern_1, Category_1, BasicCognitiveProcessingUnit_1, AgentSettings_1, Consola_1, Reasoner_1, TicTacToe;
+    var State_1, MemoryDriverIndexDB_1, BasicMemoryUnity_1, LongTermMemory_1, PerceptualMemory_1, SensorMemory_1, WorkingMemory_1, Pattern_1, Category_1, BasicCognitiveProcessingUnit_1, Agent_1, AgentSettings_1, Consola_1, Reasoner_1, TicTacToe;
     return {
         setters: [
             function (State_1_1) {
@@ -34,6 +34,9 @@ System.register(["../../libs/carina/metacore/State", "../../libs/carina/memory/M
             function (BasicCognitiveProcessingUnit_1_1) {
                 BasicCognitiveProcessingUnit_1 = BasicCognitiveProcessingUnit_1_1;
             },
+            function (Agent_1_1) {
+                Agent_1 = Agent_1_1;
+            },
             function (AgentSettings_1_1) {
                 AgentSettings_1 = AgentSettings_1_1;
             },
@@ -45,8 +48,10 @@ System.register(["../../libs/carina/metacore/State", "../../libs/carina/memory/M
             }
         ],
         execute: function () {
-            TicTacToe = class TicTacToe {
+            TicTacToe = class TicTacToe extends Agent_1.Agent {
                 constructor() {
+                    super(...arguments);
+                    //TODO Todo lo que se hace aquí se puede pasar a la clase base Agent
                     this._path = './app/';
                 }
                 init() {
@@ -63,20 +68,6 @@ System.register(["../../libs/carina/metacore/State", "../../libs/carina/memory/M
                                         WorkingMemory_1.WorkingMemory.instance.setBCPU(tmpBCPU).then((result) => {
                                             var reasoner = new Reasoner_1.Reasoner();
                                         });
-                                        //                            WorkingMemory.instance.bcpu  =new BasicCognitiveProcessingUnit();             
-                                        //Esto es usado para mostrar los eventos que sucenden en el sistema
-                                        //                            reasoner.initSensors();
-                                        //                            reasoner.sensing();
-                                        // if(reasoner.perception()){
-                                        //     if(reasoner.recognition()){
-                                        //         reasoner.categorization();
-                                        //         if(wm.getMental_state("is_categorized").getValue()){//Es una categoria conocida
-                                        //             reasoner.planning();
-                                        //             reasoner.run();
-                                        //         }
-                                        //     }
-                                        // }
-                                        // reasoner.showBoard();
                                     });
                                 });
                             });

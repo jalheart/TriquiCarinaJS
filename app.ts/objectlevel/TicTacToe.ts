@@ -12,10 +12,12 @@ import { Pattern } from '../../libs/carina/objectlevel/Pattern';
 import { Category } from '../../libs/carina/objectlevel/Category';
 import { ModelOfTheSelf } from '../../libs/carina/modeloftheself/ModelOfTheSelf';
 import { BasicCognitiveProcessingUnit } from '../../libs/carina/objectlevel/BasicCognitiveProcessingUnit';
+import { Agent } from '../../libs/carina/objectlevel/Agent';
 import { AgentSettings} from '../../libs/carina/objectlevel/AgentSettings';
 import { Consola} from '../../libs/Consola';
 import {Reasoner} from './controllers/Reasoner';
-export class TicTacToe{
+export class TicTacToe extends Agent{
+    //TODO Todo lo que se hace aquí se puede pasar a la clase base Agent
     private _path: string='./app/';
     private _config: JSON;    
     public init(){
@@ -32,20 +34,6 @@ export class TicTacToe{
                             WorkingMemory.instance.setBCPU(tmpBCPU).then((result)=>{
                                 var reasoner:Reasoner   =new Reasoner();                                
                             });
-//                            WorkingMemory.instance.bcpu  =new BasicCognitiveProcessingUnit();             
-                            //Esto es usado para mostrar los eventos que sucenden en el sistema
-//                            reasoner.initSensors();
-//                            reasoner.sensing();
-                            // if(reasoner.perception()){
-                            //     if(reasoner.recognition()){
-                            //         reasoner.categorization();
-                            //         if(wm.getMental_state("is_categorized").getValue()){//Es una categoria conocida
-                            //             reasoner.planning();
-                            //             reasoner.run();
-                            //         }
-                            //     }
-                            // }
-                            // reasoner.showBoard();
                         });
                     });
                 });
